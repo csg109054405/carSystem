@@ -6,6 +6,7 @@ import com.jkxy.car.api.utils.JSONResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -86,5 +87,27 @@ public class CarController {
     public JSONResult insertCar(Car car) {
         carService.insertCar(car);
         return JSONResult.ok();
+    }
+
+    //购买车辆
+    @GetMapping("buyCar/{carName}/{carType}/{carSeries}/{count}")
+    public JSONResult buyCar(@PathVariable String carName,@PathVariable String carType,@PathVariable String carSeries,@PathVariable int count) {
+        Boolean result = carService.buyCar(carName,carType,carSeries,count);
+        if (result){
+            return JSONResult.ok();
+        }else {
+            return JSONResult.errorMsg("车库数量不足");
+        }
+    }
+
+    //模糊查询分页
+    @GetMapping("findByCarNames/{carName}/{begin}/{end}")
+    public JSONResult findByCarName(@PathVariable String carName,@PathVariable int begin,@PathVariable int end) {
+       if(end >= begin && begin>0){
+           List<Car> cars = carService.findByCarNamePage(carName, begin, end);
+           return JSONResult.ok(cars);
+       } else {
+           return JSONResult.errorMsg("结束行要大于开始行，且开始行大于0");
+       }
     }
 }
